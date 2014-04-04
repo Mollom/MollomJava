@@ -283,7 +283,7 @@ public class MollomClientBuilder {
       postParams.putSingle("clientVersion", clientVersion);
     }
     if (expectedLanguages != null) {
-      List<String> expectedLanguageCodes = new ArrayList<>();
+      List<String> expectedLanguageCodes = new ArrayList<String>();
       // If the expectedLanguages list is empty, but not null, it means the user explicitly wants to disable the feature
       // in that case, we need to send "?expectedLanguages=" to the server, which is accomplished by adding "" to the list
       if (expectedLanguages.length > 0) {

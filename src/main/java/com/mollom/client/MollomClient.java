@@ -71,7 +71,9 @@ public class MollomClient {
 
       DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
       this.documentBuilder = documentBuilderFactory.newDocumentBuilder();
-    } catch (JAXBException | ParserConfigurationException e) {
+    } catch (JAXBException e) {
+      throw new MollomConfigurationException("Failed to initialize MollomClient.", e);
+    } catch(ParserConfigurationException e) {
       throw new MollomConfigurationException("Failed to initialize MollomClient.", e);
     }
   }
@@ -130,7 +132,7 @@ public class MollomClient {
     }
 
     if (content.getChecks() != null) {
-      List<String> checks = new ArrayList<>();
+      List<String> checks = new ArrayList<String>();
       for (Check check : content.getChecks()) {
         checks.add(check.toString());
       }
@@ -561,7 +563,11 @@ public class MollomClient {
       Document document = documentBuilder.parse(new InputSource(new StringReader(xml)));
       Node bodyNode = document.getElementsByTagName(bodyTag).item(0);
       return unmarshaller.unmarshal(bodyNode, expectedType).getValue();
-    } catch (SAXException | IOException | JAXBException e) {
+    } catch (SAXException e) {
+      throw new MollomUnexpectedResponseException("Issue parsing response from Mollom server.", e);
+    } catch(IOException e) {
+      throw new MollomUnexpectedResponseException("Issue parsing response from Mollom server.", e);
+    } catch(JAXBException e) {
       throw new MollomUnexpectedResponseException("Issue parsing response from Mollom server.", e);
     }
   }
@@ -595,14 +601,18 @@ public class MollomClient {
       // wrapped in a <Response> object.
       Document document = documentBuilder.parse(new InputSource(new StringReader(xml)));
 
-      List<T> list = new ArrayList<>();
+      List<T> list = new ArrayList<T>();
       NodeList bodyNodes = document.getElementsByTagName(bodyTag);
       for (int i = 0; i < bodyNodes.getLength(); i++) {
         Node bodyNode = bodyNodes.item(i);
         list.add(unmarshaller.unmarshal(bodyNode, expectedType).getValue());
       }
       return list;
-    } catch (SAXException | IOException | JAXBException e) {
+    } catch (SAXException e) {
+      throw new MollomUnexpectedResponseException("Issue parsing response from Mollom server.", e);
+    } catch(IOException e) {
+      throw new MollomUnexpectedResponseException("Issue parsing response from Mollom server.", e);
+    } catch(JAXBException e) {
       throw new MollomUnexpectedResponseException("Issue parsing response from Mollom server.", e);
     }
   }
